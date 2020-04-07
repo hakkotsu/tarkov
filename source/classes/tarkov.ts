@@ -3,45 +3,45 @@
  * @module Tarkov
  */
 
-import { Api } from "./api";
-import * as crypto from 'crypto';
-import { container } from "tsyringe";
-import { ProfileData } from "../types/profile";
-import { ApiResponse } from "../types/api";
-import { Hwid, SelectedProfile, MarketFilter, BarterItem, ItemDestination } from "../types/tarkov";
-import { Localization } from "../types/i18n";
-import { TraderData } from "../types/traders";
-import { ItemsList } from "../types/item";
-import { Weather } from "../types/weather";
-import { Messages } from "../types/messages";
-import { MessageAttachements } from "../types/MessageAttachements";
-import { MarketOffers, OfferData } from "../types/market";
-import { Profile } from "./profile";
-import { Trader } from "./trader";
-import { MarketOffer } from "./marketOffer";
+import { Api } from './api'
+import * as crypto from 'crypto'
+import { container } from 'tsyringe'
+import { ProfileData } from '../types/profile'
+import { ApiResponse } from '../types/api'
+import { Hwid, SelectedProfile, MarketFilter, BarterItem, ItemDestination } from '../types/tarkov'
+import { Localization } from '../types/i18n'
+import { TraderData } from '../types/traders'
+import { ItemsList } from '../types/item'
+import { Weather } from '../types/weather'
+import { Messages } from '../types/messages'
+import { MessageAttachements } from '../types/MessageAttachements'
+import { MarketOffers, OfferData } from '../types/market'
+import { Profile } from './profile'
+import { Trader } from './trader'
+import { MarketOffer } from './marketOffer'
 
 /** Tarkov API Wrapper */
 export class Tarkov {
-  private hwid: Hwid; // Users HWID
-  private api: Api; // Our HTTP Client for making requests
-  profiles: ProfileData[] = [];
-  profile!: Profile;
-  localization!: Localization;
-  itemsList!: ItemsList;
-  traders!: Trader[];
+  private hwid: Hwid // Users HWID
+  private api: Api // Our HTTP Client for making requests
+  profiles: ProfileData[] = []
+  profile!: Profile
+  localization!: Localization
+  itemsList!: ItemsList
+  traders!: Trader[]
 
   constructor(hwid?: Hwid) {
     // Use the provided hwid or generate one
-    this.hwid = hwid || this.generateHwid();
+    this.hwid = hwid || this.generateHwid()
 
     // Setup our API
-    this.api = container.resolve(Api);
-    this.profile = container.resolve(Profile);
+    this.api = container.resolve(Api)
+    this.profile = container.resolve(Profile)
 
-    console.log(` > Initialized Tarkov API Wrapper`);
-    console.log(` > HWID: ${this.hwid}`);
-    console.log(` > Launcher Version: ${this.launcherVersion}`);
-    console.log(` > Game Version: ${this.gameVersion}`);
+    console.log(` > Initialized Tarkov API Wrapper`)
+    console.log(` > HWID: ${this.hwid}`)
+    console.log(` > Launcher Version: ${this.launcherVersion}`)
+    console.log(` > Game Version: ${this.gameVersion}`)
   }
 
   /*
@@ -49,19 +49,19 @@ export class Tarkov {
    */
 
   get launcherVersion() {
-    return this.api.launcherVersion;
+    return this.api.launcherVersion
   }
 
   get gameVersion() {
-    return this.api.gameVersion;
+    return this.api.gameVersion
   }
 
   get session() {
-    return this.api.session;
+    return this.api.session
   }
 
   set session(session) {
-    this.api.session = session;
+    this.api.session = session
   }
 
   /*
@@ -75,7 +75,7 @@ export class Tarkov {
    * @param {string} password Your Tarkov account password
    * @param {string} [twoFactor] 2FA Code sent to your account email
    */
-  
+
   /**
    * Create a new tarkov session
    *
@@ -86,13 +86,13 @@ export class Tarkov {
    * @beta
    */
   public async login(email: string, password: string, twoFactor?: string) {
-    const hash = crypto.createHash('md5').update(password).digest('hex');
+    const hash = crypto.createHash('md5').update(password).digest('hex')
 
     if (twoFactor !== undefined) {
       try {
-        await this.activateHardware(email, twoFactor);
+        await this.activateHardware(email, twoFactor)
       } catch ({ err, errmsg }) {
-        return console.error(`[API Error] ${errmsg}`);
+        return console.error(`[API Error] ${errmsg}`)
       }
     }
 
@@ -100,8 +100,8 @@ export class Tarkov {
       email,
       pass: hash,
       hwCode: this.hwid,
-      captcha: null, 
-    });
+      captcha: null,
+    })
 
     try {
       const result: ApiResponse = await this.api.launcher.post('launcher/login', {
@@ -110,17 +110,17 @@ export class Tarkov {
           branch: 'live',
         },
         body,
-      });
+      })
 
       if (result.body.err === 0) {
-        await this.exchangeAccessToken(result.body.data.access_token);
-        return;
+        await this.exchangeAccessToken(result.body.data.access_token)
+        return
       }
 
-      console.error(`[API Error] ${result.body.errmsg}`);
-      return result.body;
+      console.error(`[API Error] ${result.body.errmsg}`)
+      return result.body
     } catch (error) {
-      console.log('[Login] ', error);
+      console.log('[Login] ', error)
     }
   }
 
@@ -129,9 +129,9 @@ export class Tarkov {
    * @async
    */
   public async getProfiles(): Promise<ProfileData[]> {
-    const result: ApiResponse<ProfileData[]> = await this.api.prod.post('client/game/profile/list');
-    this.profiles = result.body.data;
-    return this.profiles;
+    const result: ApiResponse<ProfileData[]> = await this.api.prod.post('client/game/profile/list')
+    this.profiles = result.body.data
+    return this.profiles
   }
 
   /**
@@ -140,8 +140,8 @@ export class Tarkov {
    * @param {string} profileId
    */
   public async selectProfile(profile: ProfileData): Promise<Profile> {
-    this.profile.selectProfile(profile);
-    return this.profile;
+    this.profile.selectProfile(profile)
+    return this.profile
   }
 
   /**
@@ -149,9 +149,9 @@ export class Tarkov {
    * @async
    */
   public async getTraders(): Promise<Trader[]> {
-    const result: ApiResponse<TraderData[]> = await this.api.trading.post('client/trading/api/getTradersList');
-    this.traders = result.body.data.map(trader => new Trader(trader));
-    return this.traders;
+    const result: ApiResponse<TraderData[]> = await this.api.trading.post('client/trading/api/getTradersList')
+    this.traders = result.body.data.map((trader) => new Trader(trader))
+    return this.traders
   }
 
   /**
@@ -160,8 +160,8 @@ export class Tarkov {
    * @param {string} id The traders ID
    */
   public async getTrader(id: string): Promise<TraderData> {
-    const result: ApiResponse<TraderData> = await this.api.trading.post(`client/trading/api/getTrader/${id}`);
-    return new Trader(result.body.data);
+    const result: ApiResponse<TraderData> = await this.api.trading.post(`client/trading/api/getTrader/${id}`)
+    return new Trader(result.body.data)
   }
 
   /**
@@ -170,14 +170,14 @@ export class Tarkov {
    * @param {number} [type] The type of message to filter by - OPTIONAL
    */
   public async getMessages(type?: number): Promise<Messages[]> {
-    const result: ApiResponse<Messages[]> = await this.api.prod.post('client/mail/dialog/list');
+    const result: ApiResponse<Messages[]> = await this.api.prod.post('client/mail/dialog/list')
 
     // Optionally filter by type
     if (type) {
-      return result.body.data.filter((dialog: Messages) => dialog.type === type);
+      return result.body.data.filter((dialog: Messages) => dialog.type === type)
     }
 
-    return result.body.data;
+    return result.body.data
   }
 
   /**
@@ -186,9 +186,9 @@ export class Tarkov {
    * @param {string} id Message ID to get attachements for
    */
   public async getMessageAttachments(id?: string): Promise<MessageAttachements> {
-    const body = JSON.stringify({ dialogId: id });
-    const result: ApiResponse<MessageAttachements> = await this.api.prod.post('client/mail/dialog/getAllAttachments', { body });
-    return result.body.data;
+    const body = JSON.stringify({ dialogId: id })
+    const result: ApiResponse<MessageAttachements> = await this.api.prod.post('client/mail/dialog/getAllAttachments', { body })
+    return result.body.data
   }
 
   /**
@@ -196,10 +196,10 @@ export class Tarkov {
    * @async
    */
   public async getItems(): Promise<ItemsList> {
-    const body = JSON.stringify({ crc : 0 });
-    const result: ApiResponse<ItemsList> = await this.api.prod.post('client/items', { body });
-    this.itemsList = result.body.data;
-    return result.body.data;
+    const body = JSON.stringify({ crc: 0 })
+    const result: ApiResponse<ItemsList> = await this.api.prod.post('client/items', { body })
+    this.itemsList = result.body.data
+    return result.body.data
   }
 
   /**
@@ -207,8 +207,8 @@ export class Tarkov {
    * @async
    */
   public async getWeather(): Promise<Weather> {
-    const result: ApiResponse<Weather> = await this.api.prod.post('client/weather');
-    return result.body.data;
+    const result: ApiResponse<Weather> = await this.api.prod.post('client/weather')
+    return result.body.data
   }
 
   /**
@@ -216,8 +216,8 @@ export class Tarkov {
    * @async
    */
   public async keepAlive(): Promise<any> {
-    const result: ApiResponse<any> = await this.api.prod.post('client/game/keepalive');
-    return result.body.data;
+    const result: ApiResponse<any> = await this.api.prod.post('client/game/keepalive')
+    return result.body.data
   }
 
   /**
@@ -226,9 +226,9 @@ export class Tarkov {
    * @param {string} language language code, example: English = en
    */
   public async getI18n(language: string): Promise<Localization> {
-    const result: ApiResponse<Localization> = await this.api.prod.post(`client/locale/${language}`);
-    this.localization = result.body.data;
-    return result.body.data;
+    const result: ApiResponse<Localization> = await this.api.prod.post(`client/locale/${language}`)
+    this.localization = result.body.data
+    return result.body.data
   }
 
   /**
@@ -255,7 +255,7 @@ export class Tarkov {
    * @param {String} [filter.neededSearchId=""] - if you are performing required item search, include item id
    */
   public async searchMarket(page: number, limit: number, filter: MarketFilter): Promise<MarketOffers> {
-    if (!filter.handbookId) throw new Error('handbookId is required');
+    if (!filter.handbookId) throw new Error('handbookId is required')
 
     const body = JSON.stringify({
       page: page,
@@ -279,15 +279,13 @@ export class Tarkov {
       neededSearchId: '',
       tm: 1,
       ...filter,
-    });
-    
-    const result: ApiResponse<MarketOffers> = await this.api.ragfair.post('client/ragfair/find', { body });
+    })
+
+    const result: ApiResponse<MarketOffers> = await this.api.ragfair.post('client/ragfair/find', { body })
     return {
       ...result.body.data,
-      offers: [
-        ...result.body.data.offers.map((offer: OfferData) => new MarketOffer(offer)),
-      ]
-    };
+      offers: [...result.body.data.offers.map((offer: OfferData) => new MarketOffer(offer))],
+    }
   }
 
   /**
@@ -299,28 +297,32 @@ export class Tarkov {
    * @param {String} requirement.price - On what price you want to sell.
    * @param {boolean} sellAll - Sell all in one piece. Default false
    */
-  public async offerItem(items: string[], requirements: { _tpl: string, price: number }, sellAll: boolean = false): Promise<any> {
+  public async offerItem(items: string[], requirements: { _tpl: string; price: number }, sellAll = false): Promise<any> {
     const body = JSON.stringify({
-      data: [{
-        Action: "RagFairAddOffer",
-        sellInOnePiece: sellAll,
-        items: items, // Array of item_ids
-        requirements: [{
-          _tpl: requirements._tpl,
-          count: requirements.price,
-          level: 0,
-          side: 0,
-          onlyFunctional: false,
-        }],
-        tm: 2,
-      }],
-    });
-    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body });
+      data: [
+        {
+          Action: 'RagFairAddOffer',
+          sellInOnePiece: sellAll,
+          items: items, // Array of item_ids
+          requirements: [
+            {
+              _tpl: requirements._tpl,
+              count: requirements.price,
+              level: 0,
+              side: 0,
+              onlyFunctional: false,
+            },
+          ],
+          tm: 2,
+        },
+      ],
+    })
+    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body })
 
     // Update our local inventory state
-    this.profile.handleChanges(result.body.data.items);
+    this.profile.handleChanges(result.body.data.items)
 
-    return result.body.data;
+    return result.body.data
   }
 
   /**
@@ -332,15 +334,17 @@ export class Tarkov {
    */
   public async stackItem(fromId: string, toId: string): Promise<any> {
     const body = JSON.stringify({
-      data: [{
-        Action: 'Merge',
-        item: fromId,
-        with: toId,
-      }],
+      data: [
+        {
+          Action: 'Merge',
+          item: fromId,
+          with: toId,
+        },
+      ],
       tm: 2,
-    });
-    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body });
-    return result.body.data;
+    })
+    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body })
+    return result.body.data
   }
 
   /**
@@ -355,19 +359,21 @@ export class Tarkov {
    */
   public async moveItem(itemId: string, destination: ItemDestination): Promise<any> {
     const body = JSON.stringify({
-      data: [{
-        Action: 'Move',
-        item: itemId,
-        to: {
-          container: 'hideout', // main = container, hideout = stash 
-          location: { x: 0, y: 0, r: 0 }, // try to put to topleft if empty
-          ...destination,
+      data: [
+        {
+          Action: 'Move',
+          item: itemId,
+          to: {
+            container: 'hideout', // main = container, hideout = stash
+            location: { x: 0, y: 0, r: 0 }, // try to put to topleft if empty
+            ...destination,
+          },
         },
-      }],
+      ],
       tm: 2,
-    });
-    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body });
-    return result.body.data;
+    })
+    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body })
+    return result.body.data
   }
 
   /**
@@ -380,21 +386,23 @@ export class Tarkov {
    */
   public async collectItem(itemId: string, stashId: string, attachmentId: string): Promise<any> {
     const body = JSON.stringify({
-      data: [{
-        Action: 'Move',
-        item: itemId,
-        to:{
-          id: stashId,
-          container: 'hideout',
+      data: [
+        {
+          Action: 'Move',
+          item: itemId,
+          to: {
+            id: stashId,
+            container: 'hideout',
+          },
+          fromOwner: {
+            id: attachmentId,
+            type: 'Mail',
+          },
         },
-        fromOwner: {
-          id: attachmentId,
-          type: 'Mail'
-        }
-      }]
-    });
-    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body });
-    return result.body.data;
+      ],
+    })
+    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body })
+    return result.body.data
   }
 
   /*
@@ -410,10 +418,10 @@ export class Tarkov {
       version: {
         major: this.gameVersion,
         game: 'live',
-        backend: '6'
+        backend: '6',
       },
       hwCode: this.hwid,
-    });
+    })
 
     try {
       const result: ApiResponse = await this.api.prod.post('launcher/game/start', {
@@ -423,24 +431,24 @@ export class Tarkov {
         },
         headers: {
           Host: 'prod.escapefromtarkov.com',
-          'Authorization': access_token,
+          Authorization: access_token,
         },
         body,
         unityAgent: false,
         appVersion: false,
         requestId: false,
         bsgSession: false,
-      } as any);
+      } as any)
 
       if (result.body.err === 0) {
-        this.session = result.body.data;
-        console.log('New session started!', this.session);
-        return true;
+        this.session = result.body.data
+        console.log('New session started!', this.session)
+        return true
       }
-      
-      throw `Invalid status code ${result.body.err}`;
+
+      throw `Invalid status code ${result.body.err}`
     } catch (error) {
-      throw error;
+      throw error
     }
   }
 
@@ -454,7 +462,7 @@ export class Tarkov {
       email,
       hwCode: this.hwid,
       activateCode: twoFactor,
-    });
+    })
 
     try {
       await this.api.launcher.post('launcher/hardwareCode/activate', {
@@ -462,25 +470,25 @@ export class Tarkov {
           launcherVersion: this.launcherVersion,
         },
         body,
-      });
+      })
     } catch (error) {
-      console.log(`Activate Hardware Failed`);
-      throw error;
+      console.log(`Activate Hardware Failed`)
+      throw error
     }
   }
 
   // TODO: move this to a HWID class
   private generateHwid(): Hwid {
     const random_hash = () => {
-      let hash = crypto.createHash('sha1').update(Math.random().toString()).digest('hex');
-      return hash;
+      const hash = crypto.createHash('sha1').update(Math.random().toString()).digest('hex')
+      return hash
     }
 
     const short_hash = () => {
-      let hash = random_hash();
-      return hash.substring(0, hash.length - 8);
+      const hash = random_hash()
+      return hash.substring(0, hash.length - 8)
     }
-  
-    return `#1-${random_hash()}:${random_hash()}:${random_hash()}-${random_hash()}-${random_hash()}-${random_hash()}-${random_hash()}-${short_hash()}`;
+
+    return `#1-${random_hash()}:${random_hash()}:${random_hash()}-${random_hash()}-${random_hash()}-${random_hash()}-${random_hash()}-${short_hash()}`
   }
 }

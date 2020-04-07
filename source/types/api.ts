@@ -3,29 +3,28 @@
  * @module Types
  */
 
-import { Options, NormalizedOptions, Response } from "got";
-
+import { Options, NormalizedOptions, Response } from 'got'
 
 export interface ExtendOptions extends Options {
-  bsgAgent?: boolean;
-  unityAgent?: boolean;
-  appVersion?: boolean;
-  requestId?: boolean;
-  bsgSession?: boolean;
+  bsgAgent?: boolean
+  unityAgent?: boolean
+  appVersion?: boolean
+  requestId?: boolean
+  bsgSession?: boolean
 }
 
 export interface NormalOptions extends NormalizedOptions {
-  bsgAgent?: boolean;
-  unityAgent?: boolean;
-  appVersion?: boolean;
-  requestId?: boolean;
-  bsgSession?: boolean;
+  bsgAgent?: boolean
+  unityAgent?: boolean
+  appVersion?: boolean
+  requestId?: boolean
+  bsgSession?: boolean
 }
 
 export interface ApiResponse<Data = any> extends Response {
   body: {
-    err: number;
-    errmsg: string;
-    data: Data;
+    err: number
+    errmsg: string
+    data: Data
   }
 }

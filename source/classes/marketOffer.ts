@@ -3,36 +3,36 @@
  * @module Tarkov
  */
 
-import { User, Item, Requirement, OfferData } from "../types/market";
-import { BarterItem } from "../types/tarkov";
-import { ApiResponse } from "../types/api";
-import { container } from "tsyringe";
-import { Api } from "./api";
-import { Profile } from "./profile";
+import { User, Item, Requirement, OfferData } from '../types/market'
+import { BarterItem } from '../types/tarkov'
+import { ApiResponse } from '../types/api'
+import { container } from 'tsyringe'
+import { Api } from './api'
+import { Profile } from './profile'
 
 export class MarketOffer {
-  _id!: string;
-  intId!: string;
-  user!: User;
-  root!: string;
-  items!: Item[];
-  itemsCost!: number;
-  requirements!: Requirement[];
-  requirementsCost!: number;
-  summaryCost!: number;
-  sellInOnePiece!: boolean;
-  startTime!: number;
-  endTime!: number;
-  loyaltyLevel!: number;
-  buyRestrictionMax?: number;
-  api: Api;
-  profile: Profile;
+  _id!: string
+  intId!: string
+  user!: User
+  root!: string
+  items!: Item[]
+  itemsCost!: number
+  requirements!: Requirement[]
+  requirementsCost!: number
+  summaryCost!: number
+  sellInOnePiece!: boolean
+  startTime!: number
+  endTime!: number
+  loyaltyLevel!: number
+  buyRestrictionMax?: number
+  api: Api
+  profile: Profile
 
   constructor(offer: OfferData) {
-    Object.assign(this, offer);
+    Object.assign(this, offer)
 
-    this.api = container.resolve(Api);
-    this.profile = container.resolve(Profile);
+    this.api = container.resolve(Api)
+    this.profile = container.resolve(Profile)
   }
 
   /**
@@ -43,23 +43,27 @@ export class MarketOffer {
    */
   async buy(count: number, barterItems: BarterItem[]): Promise<any> {
     const body = JSON.stringify({
-      data: [{
-        Action: 'RagFairBuyOffer',
-        offers: [{
-          id: this._id,
-          count,
-          items: barterItems,
-        }],
-      }],
+      data: [
+        {
+          Action: 'RagFairBuyOffer',
+          offers: [
+            {
+              id: this._id,
+              count,
+              items: barterItems,
+            },
+          ],
+        },
+      ],
       tm: 2,
-    });
+    })
 
-    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body });
-    
+    const result: ApiResponse<any> = await this.api.prod.post('client/game/profile/items/moving', { body })
+
     // Update our local inventory state
-    this.profile.handleChanges(result.body.data.items);
+    this.profile.handleChanges(result.body.data.items)
 
-    return result.body.data;
+    return result.body.data
   }
 
   /**
@@ -68,39 +72,38 @@ export class MarketOffer {
    * @param {number} count - amount of items to buy
    */
   async buyWithRoubles(count: number): Promise<any> {
-    const roubles = this.profile.getRoubles();
+    const roubles = this.profile.getRoubles()
 
-    const barterItems: BarterItem[] = [];
-    let stacksTotal = 0;
-    
+    const barterItems: BarterItem[] = []
+    let stacksTotal = 0
+
     // Loop through our stacks of money
-    roubles.stacks.forEach(stack => {
+    roubles.stacks.forEach((stack) => {
       // If our current total of roubles is less than the item cost
-      if (stacksTotal < (this.summaryCost * count)) {
-        let stackCount = stack.upd.StackObjectsCount;
+      if (stacksTotal < this.summaryCost * count) {
+        let stackCount = stack.upd.StackObjectsCount
 
         // If this entire stack pushes us over the cost, only take what we need
-        if (stacksTotal + stackCount > (this.summaryCost * count)) {
-          stackCount = (this.summaryCost * count) - stacksTotal;
+        if (stacksTotal + stackCount > this.summaryCost * count) {
+          stackCount = this.summaryCost * count - stacksTotal
         }
 
         // Add this stack to our barterItems array
         barterItems.push({
           id: stack._id,
           count: stackCount,
-        });
-  
+        })
+
         // Update our current stacksTotal
-        stacksTotal += stackCount;
+        stacksTotal += stackCount
       }
-    });
+    })
 
     // If our total is less than the cost, we don't have enough!
-    if (stacksTotal < (this.summaryCost * count)) {
-      throw new Error('Not enough money');
+    if (stacksTotal < this.summaryCost * count) {
+      throw new Error('Not enough money')
     }
 
-    return this.buy(count, barterItems);
+    return this.buy(count, barterItems)
   }
-
 }

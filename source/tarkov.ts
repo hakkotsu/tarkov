@@ -3,6 +3,6 @@
  * @module Tarkov
  */
 
-import "reflect-metadata";
+import 'reflect-metadata'
 
-export * from './classes/tarkov';
+export * from './classes/tarkov'
