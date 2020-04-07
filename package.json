@@ -30,7 +30,8 @@
     "build": "rm -rf ./lib && tsc || del -rf \"./lib\" && tsc",
     "dev": "tsnd --respawn testing.ts",
     "docs": "rm -rf ./docs && typedoc --out docs src || del -rf \"./docs\" && typedoc --out docs src",
-    "docs:serve": "npm run docs && npx http-server docs"
+    "docs:serve": "npm run docs && npx http-server docs",
+    "lint": "eslint . --ext .ts"
   },
   "dependencies": {
     "got": "10.7.0",
@@ -41,6 +42,9 @@
   "devDependencies": {
     "@types/got": "9.6.9",
     "@types/pako": "1.0.1",
+    "@typescript-eslint/eslint-plugin": "2.27.0",
+    "@typescript-eslint/parser": "2.27.0",
+    "eslint": "6.8.0",
     "ts-node-dev": "1.0.0-pre.44",
     "typedoc": "0.17.4",
     "typedoc-plugin-external-module-name": "3.0.0",

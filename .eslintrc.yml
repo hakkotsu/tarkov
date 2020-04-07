@@ -1,0 +1,15 @@
+parserOptions:
+  project: './tsconfig.json'
+
+ignorePatterns:
+  - '**/*.test.ts'
+  - 'build'
+
+extends:
+  - 'plugin:@typescript-eslint/recommended'
+
+rules:
+  '@typescript-eslint/promise-function-async': 'off'
+  '@typescript-eslint/strict-boolean-expressions': 'off'
+  '@typescript-eslint/explicit-function-return-type': 'off'
+  '@typescript-eslint/consistent-type-assertions': 'off'
