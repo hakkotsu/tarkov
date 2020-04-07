@@ -27,11 +27,16 @@
     "lib"
   ],
   "scripts": {
-    "build": "rm -rf ./lib && tsc || del -rf \"./lib\" && tsc",
+    "build": "run-s clean && run-p build:*",
+    "build:main": "tsc --project tsconfig.json",
+    "clean": "rimraf build",
     "dev": "tsnd --respawn testing.ts",
-    "docs": "rm -rf ./docs && typedoc --out docs src || del -rf \"./docs\" && typedoc --out docs src",
-    "docs:serve": "npm run docs && npx http-server docs",
-    "lint": "eslint . --ext .ts"
+    "docs": "rimraf docs && typedoc --out docs src",
+    "docs:serve": "run-s docs && npx http-server docs",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "run-s \"lint -- --fix\"",
+    "prepublishOnly": "run-s clean build",
+    "preversion": "run-s clean lint test build"
   },
   "prettier": {
     "semi": false,
@@ -51,7 +56,9 @@
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
     "eslint-plugin-prettier": "3.1.2",
+    "npm-run-all": "4.1.5",
     "prettier": "2.0.4",
+    "rimraf": "3.0.2",
     "ts-node-dev": "1.0.0-pre.44",
     "typedoc": "0.17.4",
     "typedoc-plugin-external-module-name": "3.0.0",
