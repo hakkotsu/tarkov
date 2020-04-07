@@ -21,10 +21,10 @@
   },
   "license": "MIT",
   "author": "mkovero",
-  "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
+  "main": "build/main/tarkov.js",
+  "typings": "build/main/tarkov.d.ts",
   "files": [
-    "lib"
+    "build"
   ],
   "scripts": {
     "build": "run-s clean && run-p build:*",
