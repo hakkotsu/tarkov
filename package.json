@@ -7,6 +7,7 @@
   "scripts": {
     "build": "rm -rf ./lib && tsc || del -rf \"./lib\" && tsc",
     "docs": "rm -rf ./docs && typedoc --out docs src || del -rf \"./docs\" && typedoc --out docs src",
+    "docs:serve": "npm run docs && npx http-server docs",
     "dev": "tsnd --respawn testing.ts"
   },
   "files": [
