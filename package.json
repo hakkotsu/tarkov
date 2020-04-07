@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/matias-kovero/tarkov#readme",
   "dependencies": {
-    "got": "10.5.7",
+    "got": "10.7.0",
     "pako": "1.0.11",
     "reflect-metadata": "0.1.13",
     "tsyringe": "4.1.0"
@@ -42,8 +42,8 @@
     "@types/got": "9.6.9",
     "@types/pako": "1.0.1",
     "ts-node-dev": "1.0.0-pre.44",
-    "typedoc": "0.16.10",
+    "typedoc": "0.17.4",
     "typedoc-plugin-external-module-name": "3.0.0",
-    "typescript": "3.7.5"
+    "typescript": "3.8.3"
   }
 }
