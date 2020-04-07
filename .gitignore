@@ -1,3 +1,30 @@
+## Editors and IDE
+*.sublime*
+*.code-workspace
+.vscode
+
+## Node.js
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.swp
+pids
+logs
+results
+tmp
 node_modules
-lib
-testing.ts
+npm-debug.log
+
+## Build
+build
+
+## Coverage reports
+coverage
+
+## API keys and secrets
+.env
