@@ -30,18 +30,36 @@
     "build": "run-s clean && run-p build:*",
     "build:main": "tsc --project tsconfig.json",
     "clean": "rimraf build",
-    "dev": "tsnd --respawn testing.ts",
     "docs": "rimraf docs && typedoc --out docs src",
     "docs:serve": "run-s docs && npx http-server docs",
     "lint": "eslint . --ext .ts",
     "lint:fix": "run-s \"lint -- --fix\"",
     "prepublishOnly": "run-s clean build",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "preversion": "run-s clean lint test build"
   },
   "prettier": {
     "printWidth": 140,
     "semi": false,
     "singleQuote": true
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "source/**/*.ts"
+    ],
+    "coverageDirectory": "coverage",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/build/"
+    ],
+    "preset": "ts-jest",
+    "setupFiles": [
+      "dotenv/config"
+    ],
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/?(*.)+(spec|test).[jt]s?(x)"
+    ]
   },
   "dependencies": {
     "got": "10.7.0",
@@ -51,16 +69,18 @@
   },
   "devDependencies": {
     "@types/got": "9.6.9",
+    "@types/jest": "25.2.1",
     "@types/pako": "1.0.1",
     "@typescript-eslint/eslint-plugin": "2.27.0",
     "@typescript-eslint/parser": "2.27.0",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
     "eslint-plugin-prettier": "3.1.2",
+    "jest": "25.2.7",
     "npm-run-all": "4.1.5",
     "prettier": "2.0.4",
     "rimraf": "3.0.2",
-    "ts-node-dev": "1.0.0-pre.44",
+    "ts-jest": "25.3.1",
     "typedoc": "0.17.4",
     "typedoc-plugin-external-module-name": "3.0.0",
     "typescript": "3.8.3"
