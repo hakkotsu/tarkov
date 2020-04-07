@@ -3,7 +3,7 @@
  * @module Types
  */
 
-import { Options, NormalizedOptions, Response } from "got/dist/source";
+import { Options, NormalizedOptions, Response } from "got";
 
 
 export interface ExtendOptions extends Options {
