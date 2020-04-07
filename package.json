@@ -2,37 +2,36 @@
   "name": "tarkov",
   "version": "1.0.2",
   "description": "A client library for Escape from Tarkov API",
-  "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
-  "scripts": {
-    "build": "rm -rf ./lib && tsc || del -rf \"./lib\" && tsc",
-    "docs": "rm -rf ./docs && typedoc --out docs src || del -rf \"./docs\" && typedoc --out docs src",
-    "docs:serve": "npm run docs && npx http-server docs",
-    "dev": "tsnd --respawn testing.ts"
-  },
-  "files": [
-    "lib"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/matias-kovero/tarkov.git"
-  },
   "keywords": [
     "eft",
     "api",
     "sdk",
-    "api",
     "escapefromtarkov",
     "tarkov",
     "bot",
     "escape-from-tarkov"
   ],
-  "author": "mkovero",
-  "license": "MIT",
+  "homepage": "https://github.com/matias-kovero/tarkov#readme",
   "bugs": {
     "url": "https://github.com/matias-kovero/tarkov/issues"
   },
-  "homepage": "https://github.com/matias-kovero/tarkov#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matias-kovero/tarkov.git"
+  },
+  "license": "MIT",
+  "author": "mkovero",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "rm -rf ./lib && tsc || del -rf \"./lib\" && tsc",
+    "dev": "tsnd --respawn testing.ts",
+    "docs": "rm -rf ./docs && typedoc --out docs src || del -rf \"./docs\" && typedoc --out docs src",
+    "docs:serve": "npm run docs && npx http-server docs"
+  },
   "dependencies": {
     "got": "10.7.0",
     "pako": "1.0.11",
