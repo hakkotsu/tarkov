@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matias-kovero/tarkov.git"
+    "url": "https://github.com/matias-kovero/tarkov.git"
   },
   "license": "MIT",
   "author": "mkovero",
@@ -56,5 +56,8 @@
     "typedoc": "0.17.4",
     "typedoc-plugin-external-module-name": "3.0.0",
     "typescript": "3.8.3"
+  },
+  "engines": {
+    "node": ">=10"
   }
 }
